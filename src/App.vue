@@ -29,7 +29,7 @@
 
   <div v-if="state.matches('failure')">
     <h4>Error loading restaurants</h4>
-    <p>{{ state.contex.error.message }}</p>
+    <p>{{ state.context.error.message }}</p>
   </div>
 </template>
 
