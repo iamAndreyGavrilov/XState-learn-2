@@ -51,7 +51,27 @@ const fetchMachine = createMachine<FetchContext, FecthEvent, FetchState>({
     error: undefined,
   },
   states: {
-    initial: {},
+    initial: {
+      on: {
+        FETCH: 'loading',
+      },
+    },
+    ready: {
+      on: {
+        FETCH: 'loading',
+      },
+    },
+    loading: {},
+    success: {
+      after: {
+        2500: 'ready',
+      },
+    },
+    failure: {
+      on: {
+        RETRY: 'loading',
+      },
+    },
   },
 });
 
