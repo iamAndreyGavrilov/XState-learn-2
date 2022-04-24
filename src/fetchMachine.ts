@@ -28,18 +28,18 @@ type FailureContext = FetchContext & {
   error: Error;
 };
 
-type InitialContext = { value: 'initial'; context: InitialContext };
-type ReadyContext = { value: 'ready'; context: ReadyContext };
-type LoadingContext = { value: 'loading'; context: LoadingContext };
-type SuccessContext = { value: 'success'; context: SuccessContext };
-type FailureContext = { value: 'failure'; context: FailureContext };
+type InitialState = { value: 'initial'; context: InitialContext };
+type ReadyState = { value: 'ready'; context: ReadyContext };
+type LoadingState = { value: 'loading'; context: LoadingContext };
+type SuccessState = { value: 'success'; context: SuccessContext };
+type FailureState = { value: 'failure'; context: FailureContext };
 
 type FetchState =
-  | InitialContext
-  | ReadyContext
-  | LoadingContext
-  | SuccessContext
-  | FailureContext;
+  | InitialState
+  | ReadyState
+  | LoadingState
+  | SuccessState
+  | FailureState;
 
 type FecthEvent = { type: 'FETCH' } | { type: 'RETRY' };
 
