@@ -1,4 +1,5 @@
-import { createMachine } from 'xstate';
+import { createMachine, assign } from 'xstate';
+import { fetchRestaurants } from './data';
 
 interface FetchContext {
   restaurants?: Restaurant[];
@@ -14,19 +15,18 @@ type ReadyContext = FetchContext & {
   restaurants: Restaurant[];
   error: undefined;
 };
+
 type LoadingContext = FetchContext & {
   restaurants: Restaurant[];
   error: undefined;
 };
+
 type SuccessContext = FetchContext & {
   restaurants: Restaurant[];
   error: undefined;
 };
 
-type FailureContext = FetchContext & {
-  restaurants: undefined;
-  error: Error;
-};
+type FailureContext = FetchContext & { restaurants: undefined; error: Error };
 
 type InitialState = { value: 'initial'; context: InitialContext };
 type ReadyState = { value: 'ready'; context: ReadyContext };
@@ -41,9 +41,9 @@ type FetchState =
   | SuccessState
   | FailureState;
 
-type FecthEvent = { type: 'FETCH' } | { type: 'RETRY' };
+type FetchEvent = { type: 'FETCH' } | { type: 'RETRY' };
 
-const fetchMachine = createMachine<FetchContext, FecthEvent, FetchState>({
+const fetchMachine = createMachine<FetchContext, FetchEvent, FetchState>({
   id: 'fetch',
   initial: 'initial',
   context: {
@@ -61,7 +61,29 @@ const fetchMachine = createMachine<FetchContext, FecthEvent, FetchState>({
         FETCH: 'loading',
       },
     },
-    loading: {},
+    loading: {
+      entry: assign({
+        restaurants: (context, _event) => context.restaurants || [],
+        error: (_context, _event) => undefined,
+      }),
+      invoke: {
+        id: 'getRestaurants',
+        src: (_context, _event) => fetchRestaurants(),
+        onDone: {
+          target: 'success',
+          actions: assign({
+            restaurants: (_context, event) => event.data,
+          }),
+        },
+        onError: {
+          target: 'failure',
+          actions: assign({
+            restaurants: (_context, _event) => undefined,
+            error: (_context, event) => event.data,
+          }),
+        },
+      },
+    },
     success: {
       after: {
         2500: 'ready',
